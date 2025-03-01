@@ -1,0 +1,36 @@
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
+
+def left_shift(bit_string):
+    shifted = int.from_bytes(bit_string, 'big') << 1
+    return (shifted & (2**len(bit_string)*8 - 1)).to_bytes(len(bit_string), 'big')
+
+def xor_bytes(a, b):
+    return bytes(x ^ y for x, y in zip(a, b))
+
+def generate_cmac_subkeys(key, block_size):
+    if block_size == 128:
+        R_b = 0x87
+    elif block_size == 64:
+        R_b = 0x1B
+    else:
+        raise ValueError("Unsupported block size")
+
+    cipher = AES.new(key, AES.MODE_ECB)
+    L = cipher.encrypt(bytes(block_size // 8))
+
+    K1 = left_shift(L)
+    if L[0] & 0x80:
+        K1 = xor_bytes(K1, bytes([R_b]) + bytes(block_size // 8 - 1))
+
+    K2 = left_shift(K1)
+    if K1[0] & 0x80:
+        K2 = xor_bytes(K2, bytes([R_b]) + bytes(block_size // 8 - 1))
+
+    return K1, K2
+
+# Example usage:
+key = b'This is a key123'  # 16 bytes key for AES-128
+K1, K2 = generate_cmac_subkeys(key, 128)
+print("K1:", K1.hex())
+print("K2:", K2.hex())
