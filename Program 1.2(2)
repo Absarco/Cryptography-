@@ -1,0 +1,33 @@
+from collections import Counter
+
+def decrypt_caesar(ciphertext, shift):
+    decrypted = []
+    for char in ciphertext:
+        if char.isalpha():
+            offset = ord('A') if char.isupper() else ord('a')
+            decrypted.append(chr((ord(char) - offset - shift) % 26 + offset))
+        else:
+            decrypted.append(char)
+    return ''.join(decrypted)
+
+def frequency_attack(ciphertext, top_n=10):
+    # English letter frequency (most common to least common)
+    english_freq_order = 'ETAOINSHRDLCUMWFGYPBVKJXQZ'
+    # Calculate letter frequency in ciphertext
+    counter = Counter(filter(str.isalpha, ciphertext.upper()))
+    most_common = [item[0] for item in counter.most_common()]
+    # Generate possible plaintexts
+    possible_plaintexts = []
+    for i in range(min(top_n, len(most_common))):
+        # Assume the most common letter in ciphertext corresponds to 'E'
+        assumed_shift = (ord(most_common[i]) - ord('E')) % 26
+        decrypted_text = decrypt_caesar(ciphertext, assumed_shift)
+        possible_plaintexts.append((assumed_shift, decrypted_text))
+    return possible_plaintexts
+
+# Example usage:
+ciphertext = "GZUD ZNK YKIXKZOUT YOTM ZNK YKIXKZOUT"
+top_n = 5
+results = frequency_attack(ciphertext, top_n)
+for shift, plaintext in results:
+    print(f"Shift: {shift}, Plaintext: {plaintext}")
