@@ -1,0 +1,27 @@
+from Crypto.Cipher import DES
+from Crypto.Util.Padding import pad
+import binascii
+
+# Key schedule for DES encryption with modified subkey generation
+def des_key_schedule(key):
+    # We are assuming a 56-bit key, key must be 8 bytes long (64 bits), with parity bits removed
+    # Step 1: Apply the PC-1 permutation (56 bits key to 56 bits key)
+    # Step 2: Split key into two halves (left half, right half)
+    # Step 3: Perform circular shifts to generate 16 subkeys (K1 to K16)
+    key = list(key)  # for the purpose of illustration
+    
+    # Just a simplified version
+    subkeys = []
+    for i in range(16):
+        # Circular shift and generate subkeys
+        subkey = key  # This should be the actual subkey generation logic
+        subkeys.append(subkey)
+    
+    return subkeys
+
+# Example key generation
+key = b'abcdefgh'  # 8-byte key
+subkeys = des_key_schedule(key)
+
+# Print subkeys (simplified, not actual PC-1 or shift logic implemented)
+print("Subkeys:", subkeys)
