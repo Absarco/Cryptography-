@@ -1,0 +1,28 @@
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+from Crypto.Random import get_random_bytes
+
+def encrypt_ecb(plaintext, key):
+    cipher = AES.new(key, AES.MODE_ECB)
+    padded_text = pad(plaintext, AES.block_size)
+    ciphertext = cipher.encrypt(padded_text)
+    return ciphertext
+
+def decrypt_ecb(ciphertext, key):
+    cipher = AES.new(key, AES.MODE_ECB)
+    padded_text = cipher.decrypt(ciphertext)
+    plaintext = unpad(padded_text, AES.block_size)
+    return plaintext
+
+def encrypt_cbc(plaintext, key):
+    iv = get_random_bytes(AES.block_size)
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    padded_text = pad(plaintext, AES.block_size)
+    ciphertext = cipher.encrypt(padded_text)
+    return iv + ciphertext
+
+def decrypt_cbc(ciphertext, key):
+    iv = ciphertext[:AES.block_size]
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    padded_text = cipher.decrypt(ciphertext[AES
+::contentReference[oaicite:4]{index=4}
