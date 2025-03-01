@@ -1,0 +1,30 @@
+from Crypto.Cipher import DES3
+from Crypto.Util.Padding import pad, unpad
+from Crypto.Random import get_random_bytes
+import binascii
+
+# 3DES CBC encryption
+def encrypt_3des_cbc(plaintext, key):
+    iv = get_random_bytes(8)  # Initialization Vector (8 bytes for DES)
+    cipher = DES3.new(key, DES3.MODE_CBC, iv)
+    ciphertext = cipher.encrypt(pad(plaintext.encode(), DES3.block_size))
+    return iv + ciphertext  # Return IV concatenated with ciphertext
+
+# 3DES CBC decryption
+def decrypt_3des_cbc(ciphertext, key):
+    iv = ciphertext[:8]  # Extract the IV
+    cipher = DES3.new(key, DES3.MODE_CBC, iv)
+    decrypted_data = unpad(cipher.decrypt(ciphertext[8:]), DES3.block_size)
+    return decrypted_data.decode()
+
+# Example usage
+key = b'0123456789abcdef0123456789abcdef01234567'  # 24-byte key for 3DES
+plaintext = "This is a secret message."
+
+# Encrypt
+encrypted_data = encrypt_3des_cbc(plaintext, key)
+print(f"Encrypted (Base64): {binascii.hexlify(encrypted_data)}")
+
+# Decrypt
+decrypted_text = decrypt_3des_cbc(encrypted_data, key)
+print(f"Decrypted text: {decrypted_text}")
