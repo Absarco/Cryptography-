@@ -1,0 +1,25 @@
+import random
+
+def diffie_hellman_key_exchange(q, a):
+    # Alice chooses a private key
+    private_key_Alice = random.randint(1, q - 1)
+    # Alice computes her public key
+    public_key_Alice = pow(a, private_key_Alice, q)
+
+    # Bob chooses a private key
+    private_key_Bob = random.randint(1, q - 1)
+    # Bob computes his public key
+    public_key_Bob = pow(a, private_key_Bob, q)
+
+    # Alice and Bob exchange public keys and compute the shared secret
+    shared_secret_Alice = pow(public_key_Bob, private_key_Alice, q)
+    shared_secret_Bob = pow(public_key_Alice, private_key_Bob, q)
+
+    return shared_secret_Alice, shared_secret_Bob
+
+# Example usage
+q = 23  # A prime number
+a = 5   # A primitive root modulo q
+shared_secret_Alice, shared_secret_Bob = diffie_hellman_key_exchange(q, a)
+print(f"Shared secret computed by Alice: {shared_secret_Alice}")
+print(f"Shared secret computed by Bob: {shared_secret_Bob}")
