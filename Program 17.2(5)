@@ -1,0 +1,47 @@
+def egcd(a, b):
+    """Extended Euclidean Algorithm to find the modular inverse of a."""
+    x, y, u, v = 0, 1, 1, 0
+    while a != 0:
+        q, r = b // a, b % a
+        m, n = x - u * q, y - v * q
+        b, a, x, y, u, v = a, r, u, v, m, n
+    return b, x, y
+
+def modinv(a, m):
+    """Find the modular inverse of a under modulo m."""
+    g, x, _ = egcd(a, m)
+    if g != 1:
+        raise ValueError(f"No modular inverse for a = {a} under modulo {m}.")
+    return x % m
+
+def affine_encrypt(text, a, b):
+    """Encrypt the text using Affine Cipher with keys a and b."""
+    if egcd(a, 26)[0] != 1:
+        raise ValueError(f"Key 'a' = {a} is not coprime with 26.")
+    return ''.join(
+        chr(((a * (ord(char) - ord('A')) + b) % 26) + ord('A'))
+        if char.isalpha() else char
+        for char in text.upper()
+    )
+
+def affine_decrypt(cipher, a, b):
+    """Decrypt the text using Affine Cipher with keys a and b."""
+    if egcd(a, 26)[0] != 1:
+        raise ValueError(f"Key 'a' = {a} is not coprime with 26.")
+    a_inv = modinv(a, 26)
+    return ''.join(
+        chr(((a_inv * ((ord(char) - ord('A')) - b)) % 26) + ord('A'))
+        if char.isalpha() else char
+        for char in cipher.upper()
+    )
+
+# Example usage:
+a = 5  # Multiplicative key
+b = 8  # Additive key
+plaintext = "AFFINECIPHER"
+ciphertext = affine_encrypt(plaintext, a, b)
+decrypted_text = affine_decrypt(ciphertext, a, b)
+
+print(f"Plaintext: {plaintext}")
+print(f"Encrypted: {ciphertext}")
+print(f"Decrypted: {decrypted_text}")
